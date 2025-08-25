@@ -81,10 +81,40 @@ function getScoreStatus(score: number) {
 }
 
 function validateUrl(url: string): string {
+  // Remove leading/trailing whitespace
+  url = url.trim();
+  
+  // Remove trailing slashes
+  url = url.replace(/\/+$/, '');
+  
+  // Add protocol if missing
   if (!url.startsWith('http://') && !url.startsWith('https://')) {
-    return 'https://' + url;
+    url = 'https://' + url;
   }
-  return url;
+  
+  // Upgrade http to https for better compatibility
+  if (url.startsWith('http://')) {
+    url = url.replace('http://', 'https://');
+  }
+  
+  // Validate and normalize the URL structure
+  try {
+    const urlObj = new URL(url);
+    
+    // Remove trailing slash from pathname if it's just "/"
+    if (urlObj.pathname === '/') {
+      urlObj.pathname = '';
+    }
+    
+    // Return the normalized URL
+    return urlObj.toString();
+  } catch {
+    // If URL parsing fails, return the original with https prefix
+    if (!url.startsWith('https://')) {
+      url = 'https://' + url.replace(/^https?:\/\//, '');
+    }
+    return url;
+  }
 }
 
 // Score threshold configuration (stored in localStorage)
@@ -392,6 +422,8 @@ export default function Home() {
     if (urlInput.trim()) {
       const validatedUrl = validateUrl(urlInput.trim());
       setCheckedUrl(validatedUrl);
+      // Update the input to show the normalized URL
+      setUrlInput(validatedUrl);
     }
   };
 
