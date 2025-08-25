@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ExternalLink, Info, RotateCcw, CheckCircle, AlertTriangle, XCircle, Phone } from "lucide-react";
+import { ContactFormModal } from "@/components/contact-form-modal";
 
 interface Audit {
   id: string;
@@ -348,7 +349,8 @@ function ScoreCard({
   description,
   url,
   category,
-  onRetest
+  onRetest,
+  onContactUs
 }: { 
   title: string; 
   icon: string; 
@@ -357,6 +359,7 @@ function ScoreCard({
   url: string;
   category: string;
   onRetest: () => void;
+  onContactUs: () => void;
 }) {
   const status = getScoreStatus(score);
   const threshold = getScoreThreshold();
@@ -417,6 +420,7 @@ function ScoreCard({
                 </Button>
                 <Button 
                   size="sm" 
+                  onClick={onContactUs}
                   className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-4"
                   data-testid={`button-contact-us-${title.toLowerCase()}`}
                 >
@@ -435,6 +439,7 @@ function ScoreCard({
 export default function Home() {
   const [urlInput, setUrlInput] = useState('');
   const [checkedUrl, setCheckedUrl] = useState('');
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   const { data, isLoading, error, refetch } = useQuery<ScoreData>({
     queryKey: [`/api/check?url=${encodeURIComponent(checkedUrl)}`],
@@ -453,6 +458,10 @@ export default function Home() {
 
   const handleTryAgain = () => {
     refetch();
+  };
+
+  const handleContactUs = () => {
+    setIsContactModalOpen(true);
   };
 
   return (
@@ -577,6 +586,7 @@ export default function Home() {
                 url={data.url}
                 category="performance"
                 onRetest={refetch}
+                onContactUs={handleContactUs}
               />
               <ScoreCard
                 title="SEO"
@@ -586,6 +596,7 @@ export default function Home() {
                 url={data.url}
                 category="seo"
                 onRetest={refetch}
+                onContactUs={handleContactUs}
               />
               <ScoreCard
                 title="Accessibility"
@@ -595,6 +606,7 @@ export default function Home() {
                 url={data.url}
                 category="accessibility"
                 onRetest={refetch}
+                onContactUs={handleContactUs}
               />
               <ScoreCard
                 title="Best Practices"
@@ -604,6 +616,7 @@ export default function Home() {
                 url={data.url}
                 category="bestPractices"
                 onRetest={refetch}
+                onContactUs={handleContactUs}
               />
             </div>
 
@@ -647,6 +660,7 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
+                onClick={handleContactUs}
                 className="px-6 py-3"
                 data-testid="button-get-help"
               >
@@ -654,6 +668,7 @@ export default function Home() {
               </Button>
               <Button 
                 variant="outline" 
+                onClick={handleContactUs}
                 className="px-6 py-3"
                 data-testid="button-learn-more"
               >
@@ -678,6 +693,13 @@ export default function Home() {
           </p>
         </div>
       </footer>
+
+      {/* Contact Form Modal */}
+      <ContactFormModal 
+        open={isContactModalOpen}
+        onOpenChange={setIsContactModalOpen}
+        websiteUrl={data?.url}
+      />
     </div>
   );
 }

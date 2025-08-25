@@ -1,5 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { storage } from "./storage";
+import { insertContactSchema } from "@shared/schema";
 
 interface Audit {
   id: string;
@@ -117,6 +119,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ 
         message: "Failed to check website performance. Please try again later." 
       });
+    }
+  });
+
+  app.post("/api/contact", async (req, res) => {
+    try {
+      const validatedData = insertContactSchema.parse(req.body);
+      const contact = await storage.createContact(validatedData);
+      res.json({ success: true, contact });
+    } catch (error) {
+      console.error("Contact form error:", error);
+      if (error instanceof Error && 'issues' in error) {
+        // Zod validation error
+        res.status(400).json({ 
+          message: "Validation failed", 
+          errors: (error as any).issues 
+        });
+      } else {
+        res.status(500).json({ 
+          message: "Failed to submit contact form. Please try again later." 
+        });
+      }
     }
   });
 
