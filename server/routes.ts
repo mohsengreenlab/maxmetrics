@@ -29,8 +29,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid URL format" });
       }
 
-      // Call Google PageSpeed Insights API
-      const apiUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(validUrl)}&category=performance&category=seo&category=accessibility&category=best-practices`;
+      // Call Google PageSpeed Insights API with API key
+      const apiKey = process.env.GOOGLE_PAGESPEED_API_KEY;
+      const apiUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(validUrl)}&category=performance&category=seo&category=accessibility&category=best-practices&key=${apiKey}`;
       
       const response = await fetch(apiUrl);
       
