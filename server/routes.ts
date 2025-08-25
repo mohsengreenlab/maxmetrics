@@ -77,7 +77,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const response = await fetch(apiUrl);
       
       if (!response.ok) {
-        throw new Error(`PageSpeed API error: ${response.status}`);
+        const errorText = await response.text().catch(() => 'Unknown error');
+        console.error(`PageSpeed API error: ${response.status} - ${errorText}`);
+        throw new Error(`PageSpeed API returned ${response.status}. This website might not be accessible or have issues.`);
       }
       
       const data: PageSpeedResponse = await response.json();

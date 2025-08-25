@@ -28,18 +28,21 @@ export const getQueryFn: <T>(options: {
   on401: UnauthorizedBehavior;
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
-  async ({ queryKey }) => {
+  async ({ queryKey, signal }) => {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+    }, 60000); // 60 second timeout
+    
+    // Combine external signal (from React Query) with our timeout signal
+    const combinedSignal = signal || controller.signal;
     
     try {
-      console.log('🚀 Starting fetch for:', queryKey.join('/'));
       const res = await fetch(queryKey.join("/") as string, {
         credentials: "include",
-        signal: controller.signal,
+        signal: combinedSignal,
       });
       clearTimeout(timeoutId);
-      console.log('✅ Fetch completed successfully for:', queryKey.join('/'));
 
       if (unauthorizedBehavior === "returnNull" && res.status === 401) {
         return null;
@@ -49,16 +52,27 @@ export const getQueryFn: <T>(options: {
       return await res.json();
     } catch (error) {
       clearTimeout(timeoutId);
-      console.log('❌ Fetch error for:', queryKey.join('/'), 'Error:', error);
       
-      // Handle AbortError gracefully - don't propagate as unhandled rejection
-      if (error instanceof Error && error.name === 'AbortError') {
-        console.warn('🛑 Request was aborted (this is normal):', queryKey.join('/'));
-        // Return a rejected promise that React Query can handle properly
-        return Promise.reject(new Error('Request was cancelled'));
+      // Handle all types of abort/cancellation errors
+      if (error instanceof Error && (
+        error.name === 'AbortError' || 
+        error.message?.includes('aborted') ||
+        error.message?.includes('cancelled')
+      )) {
+        // Create a specific error that won't trigger unhandled rejection
+        const cancelError = new Error('Request was cancelled by user or timeout');
+        cancelError.name = 'CancelledError';
+        throw cancelError;
       }
       
-      throw error;
+      // For other errors, wrap them to prevent unhandled rejections
+      if (error instanceof Error) {
+        const wrappedError = new Error(error.message);
+        wrappedError.name = error.name;
+        throw wrappedError;
+      }
+      
+      throw new Error('Unknown error occurred');
     }
   };
 
