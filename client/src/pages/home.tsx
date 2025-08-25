@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ExternalLink, Info, RotateCcw, Copy, CheckCircle, AlertTriangle, XCircle, Phone } from "lucide-react";
+import { ExternalLink, Info, RotateCcw, CheckCircle, AlertTriangle, XCircle, Phone } from "lucide-react";
 
 interface Audit {
   id: string;
@@ -155,9 +155,9 @@ function TechnicalDetailsDialog({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button 
-          variant="outline" 
+          variant="default" 
           size="sm" 
-          className="mt-3 text-xs"
+          className="mt-3 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300"
           data-testid={`button-technical-info-${title.toLowerCase()}`}
           aria-expanded={isOpen}
         >
@@ -321,24 +321,6 @@ function ScoreCard({
   const statusTextColor = status.color === 'green' ? 'text-green-700' : 
                          status.color === 'amber' ? 'text-amber-700' : 'text-red-700';
 
-  const handleCopyImprovements = async () => {
-    const improvements = [
-      `${title} Score: ${score}/100`,
-      'Priority improvements needed:',
-      '□ Run detailed analysis for specific recommendations',
-      '□ Focus on Core Web Vitals (LCP, CLS, FID)',
-      '□ Optimize images and remove unused resources',
-      '□ Improve page loading speed',
-      '□ Test on mobile and desktop devices',
-    ].join('\n');
-    
-    try {
-      await navigator.clipboard.writeText(improvements);
-      // You could add a toast notification here
-    } catch (err) {
-      console.error('Failed to copy to clipboard:', err);
-    }
-  };
 
   return (
     <Card className={`border-t-4 ${borderColor}`}>
@@ -373,16 +355,6 @@ function ScoreCard({
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={handleCopyImprovements}
-                className="text-amber-700 border-amber-300 hover:bg-amber-100"
-                data-testid={`button-copy-improvements-${title.toLowerCase()}`}
-              >
-                <Copy className="w-3 h-3 mr-1" />
-                Copy checklist
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
                 onClick={onRetest}
                 className="text-amber-700 border-amber-300 hover:bg-amber-100"
                 data-testid={`button-retest-${title.toLowerCase()}`}
@@ -413,12 +385,6 @@ export default function Home() {
   const { data, isLoading, error, refetch } = useQuery<ScoreData>({
     queryKey: [`/api/check?url=${encodeURIComponent(checkedUrl)}`],
     enabled: !!checkedUrl,
-    onError: (error) => {
-      console.log('🔍 Query error handler called:', error);
-    },
-    onSuccess: (data) => {
-      console.log('🎉 Query success handler called:', data?.url);
-    }
   });
 
   const handleSubmit = (e: React.FormEvent) => {
