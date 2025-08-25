@@ -140,6 +140,10 @@ function TechnicalDetailsDialog({
   const { data: detailsData, isLoading, error, refetch } = useQuery<DetailedScoreData>({
     queryKey: [`/api/check?url=${encodeURIComponent(url)}&details=true&strategy=${strategy}`],
     enabled: isOpen && !!url,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+    retry: 1, // Only retry once
+    retryDelay: 2000, // Wait 2 seconds before retry
   });
 
   const getCategoryAudits = () => {
@@ -207,10 +211,17 @@ function TechnicalDetailsDialog({
         </div>
         
         {isLoading && (
-          <div className="space-y-3">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-4 w-1/2" />
+          <div className="space-y-4">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
+              <p className="text-sm text-gray-600">Loading detailed analysis...</p>
+              <p className="text-xs text-gray-500 mt-1">This may take 30-60 seconds</p>
+            </div>
+            <div className="space-y-3">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-4 w-1/2" />
+            </div>
           </div>
         )}
         
@@ -218,11 +229,18 @@ function TechnicalDetailsDialog({
           <Alert>
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              Failed to load technical details. 
-              <Button variant="link" className="p-0 ml-2 h-auto" onClick={() => refetch()}>
-                <RotateCcw className="w-3 h-3 mr-1" />
-                Retry
-              </Button>
+              <div className="space-y-2">
+                <p>Technical details couldn't be loaded. This often happens when:</p>
+                <ul className="text-xs list-disc list-inside space-y-1 text-gray-600">
+                  <li>The website takes too long to analyze</li>
+                  <li>The site has security restrictions</li>
+                  <li>PageSpeed API is experiencing issues</li>
+                </ul>
+                <Button variant="link" className="p-0 h-auto text-xs" onClick={() => refetch()}>
+                  <RotateCcw className="w-3 h-3 mr-1" />
+                  Try again
+                </Button>
+              </div>
             </AlertDescription>
           </Alert>
         )}

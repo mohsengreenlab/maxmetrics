@@ -30,9 +30,13 @@ export const getQueryFn: <T>(options: {
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey, signal }) => {
     const controller = new AbortController();
+    // Use longer timeout for detailed API calls
+    const isDetailedCall = queryKey.join('/').includes('details=true');
+    const timeoutDuration = isDetailedCall ? 90000 : 60000; // 90s for detailed, 60s for regular
+    
     const timeoutId = setTimeout(() => {
       controller.abort();
-    }, 60000); // 60 second timeout
+    }, timeoutDuration);
     
     // Combine external signal (from React Query) with our timeout signal
     const combinedSignal = signal || controller.signal;
@@ -84,8 +88,8 @@ export const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       staleTime: Infinity,
       retry: false,
-      // Increase timeout for PageSpeed API calls which can take 30+ seconds
-      gcTime: 60000, // 1 minute
+      // Cache detailed calls longer since they're expensive
+      gcTime: 300000, // 5 minutes
     },
     mutations: {
       retry: false,
