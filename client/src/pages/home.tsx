@@ -72,7 +72,7 @@ export default function Home() {
   const [checkedUrl, setCheckedUrl] = useState('');
 
   const { data, isLoading, error, refetch } = useQuery<ScoreData>({
-    queryKey: ['/api/check', checkedUrl],
+    queryKey: [`/api/check?url=${encodeURIComponent(checkedUrl)}`],
     enabled: !!checkedUrl,
   });
 
