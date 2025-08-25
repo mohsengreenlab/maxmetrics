@@ -165,13 +165,16 @@ function TechnicalDetailsDialog({
           More technical info
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto" aria-describedby="dialog-description">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {title} Details
             <Badge variant="secondary">{strategy}</Badge>
           </DialogTitle>
         </DialogHeader>
+        <div id="dialog-description" className="sr-only">
+          Technical details and recommendations for {title} metrics
+        </div>
         
         {isLoading && (
           <div className="space-y-3">

@@ -47,6 +47,13 @@ export const getQueryFn: <T>(options: {
       return await res.json();
     } catch (error) {
       clearTimeout(timeoutId);
+      
+      // Handle AbortError gracefully - don't propagate as unhandled rejection
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.warn('Request was aborted:', queryKey.join('/'));
+        throw error; // Still throw so React Query knows the request failed
+      }
+      
       throw error;
     }
   };
