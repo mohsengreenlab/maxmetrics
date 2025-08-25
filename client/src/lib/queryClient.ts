@@ -33,11 +33,13 @@ export const getQueryFn: <T>(options: {
     const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
     
     try {
+      console.log('🚀 Starting fetch for:', queryKey.join('/'));
       const res = await fetch(queryKey.join("/") as string, {
         credentials: "include",
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
+      console.log('✅ Fetch completed successfully for:', queryKey.join('/'));
 
       if (unauthorizedBehavior === "returnNull" && res.status === 401) {
         return null;
@@ -47,11 +49,13 @@ export const getQueryFn: <T>(options: {
       return await res.json();
     } catch (error) {
       clearTimeout(timeoutId);
+      console.log('❌ Fetch error for:', queryKey.join('/'), 'Error:', error);
       
       // Handle AbortError gracefully - don't propagate as unhandled rejection
       if (error instanceof Error && error.name === 'AbortError') {
-        console.warn('Request was aborted:', queryKey.join('/'));
-        throw error; // Still throw so React Query knows the request failed
+        console.warn('🛑 Request was aborted (this is normal):', queryKey.join('/'));
+        // Return a rejected promise that React Query can handle properly
+        return Promise.reject(new Error('Request was cancelled'));
       }
       
       throw error;

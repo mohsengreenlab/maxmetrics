@@ -405,6 +405,12 @@ export default function Home() {
   const { data, isLoading, error, refetch } = useQuery<ScoreData>({
     queryKey: [`/api/check?url=${encodeURIComponent(checkedUrl)}`],
     enabled: !!checkedUrl,
+    onError: (error) => {
+      console.log('🔍 Query error handler called:', error);
+    },
+    onSuccess: (data) => {
+      console.log('🎉 Query success handler called:', data?.url);
+    }
   });
 
   const handleSubmit = (e: React.FormEvent) => {
