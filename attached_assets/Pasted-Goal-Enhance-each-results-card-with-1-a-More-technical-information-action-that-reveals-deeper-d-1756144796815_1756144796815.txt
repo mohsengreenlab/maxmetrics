@@ -1,0 +1,95 @@
+Goal: Enhance each results card with (1) a “More technical information” action that reveals deeper data from Google PageSpeed Insights, and (2) an inline call-to-action when a score is poor.
+
+Context: React + TS (Vite), shadcn/ui + Radix, Tailwind, TanStack Query, Wouter. Backend is Express /api/check calling PSI. We already render cards for Performance, Accessibility, Best Practices, and SEO.
+
+What to build
+
+“More technical information” per card
+
+Add a secondary button on every metric card: More technical info.
+
+On click, fetch and show detailed PSI data for that category without navigating away.
+
+Use shadcn/ui components (Accordion or Dialog) to display:
+
+Top Opportunities (title, estimatedSavings, description).
+
+Key Diagnostics (a few high-value audits like render-blocking resources, unused CSS/JS, main-thread work breakdown, third-party summary).
+
+A compact list of Passed audits (collapsible).
+
+Distinguish Lab vs Field data if available (e.g., LCP, CLS, FID/INP).
+
+Loading + error states:
+
+While fetching: show a skeleton inside the card section.
+
+On error: inline Alert with “Retry” that refires the query.
+
+State management:
+
+Use TanStack Query with a per-card key, e.g. ['psi-details', url, category, strategy].
+
+Only fetch details on demand (when the button is opened), cache results, and keep them fresh for the current session.
+
+Accessibility:
+
+Button should toggle aria-expanded and be keyboard navigable.
+
+Dialog/Accordion should trap focus and be closable with Esc.
+
+Inline CTA when results are not good
+
+For each card, if the score is below a threshold (default < 90; make thresholds configurable), show an inline CTA area under the score.
+
+CTA options (pick one sensible default and make it easy to change later):
+
+See prioritized fixes → opens a Dialog listing the top 3–5 Opportunities with links to docs.
+
+Create improvement task → simple action that copies a checklist to clipboard or opens a prefilled issue body (we don’t need external integrations right now).
+
+Re-run test → triggers the existing check with a spinner and updates this card.
+
+Make the CTA visible only when the threshold condition is met; otherwise don’t render it.
+
+Backend adjustments
+
+Update /api/check to optionally return the full PSI response so the frontend can render Opportunities/Diagnostics without extra external calls.
+
+Accept a query like ?details=true&strategy=mobile|desktop.
+
+Return per-category audits, categories, lighthouseResult, and loadingExperience as available.
+
+If you prefer a separate endpoint, add /api/check/details that proxies through the raw details for a given URL + strategy.
+
+UI/UX details
+
+Keep the cards’ current look. Place “More technical info” as a subtle secondary button next to the score. Put the CTA (when shown) below the score with clear, positive language.
+
+Use shadcn/ui Button, Accordion, Dialog, Alert, and Badge components.
+
+Show small badges like “Lab” / “Field” next to metrics where relevant.
+
+Don’t block the main result render while details load.
+
+Edge cases
+
+If PSI returns no field data, show a neutral note (“No field data for this origin”) and still render lab data.
+
+Handle rate limiting with a user-friendly message and a retry button.
+
+If the user changes strategy (mobile/desktop), invalidate and refetch the details query.
+
+Acceptance criteria
+
+Each card has a working More technical info button that loads and reveals Opportunities/Diagnostics/Passed audits with proper loading and error states.
+
+Cards with scores below threshold display an inline CTA and it works (Dialog opens, issue text copies, or re-run happens).
+
+All interactions are accessible, keyboard navigable, and responsive.
+
+Nice to have (optional)
+
+Add a small “Copy report JSON” button inside the details view.
+
+Persist the threshold in localStorage so users can tweak it.
