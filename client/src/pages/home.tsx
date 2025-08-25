@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ExternalLink, Info, RotateCcw, Copy, CheckCircle, AlertTriangle, XCircle } from "lucide-react";
+import { ExternalLink, Info, RotateCcw, Copy, CheckCircle, AlertTriangle, XCircle, Phone } from "lucide-react";
 
 interface Audit {
   id: string;
@@ -389,6 +389,14 @@ function ScoreCard({
               >
                 <RotateCcw className="w-3 h-3 mr-1" />
                 Re-run test
+              </Button>
+              <Button 
+                size="sm" 
+                className="bg-blue-600 hover:bg-blue-700 text-white border-0"
+                data-testid={`button-contact-us-${title.toLowerCase()}`}
+              >
+                <Phone className="w-3 h-3 mr-1" />
+                Contact Us
               </Button>
             </div>
           </div>
