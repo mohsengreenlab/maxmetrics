@@ -395,29 +395,35 @@ function ScoreCard({
         
         {/* CTA for Poor Scores */}
         {needsImprovement && (
-          <div className="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
-            <h5 className="text-xs font-medium text-amber-800 mb-2">
-              Needs improvement (below {threshold})
-            </h5>
-            <div className="flex flex-col sm:flex-row gap-2 text-xs">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={onRetest}
-                className="text-amber-700 border-amber-300 hover:bg-amber-100"
-                data-testid={`button-retest-${title.toLowerCase()}`}
-              >
-                <RotateCcw className="w-3 h-3 mr-1" />
-                Re-run test
-              </Button>
-              <Button 
-                size="sm" 
-                className="bg-blue-600 hover:bg-blue-700 text-white border-0"
-                data-testid={`button-contact-us-${title.toLowerCase()}`}
-              >
-                <Phone className="w-3 h-3 mr-1" />
-                Contact Us
-              </Button>
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            <div className="text-center space-y-3">
+              <div className="flex items-center justify-center space-x-2">
+                <div className="w-2 h-2 rounded-full bg-orange-400"></div>
+                <span className="text-xs font-medium text-gray-600">
+                  Score below {threshold} - Room for improvement
+                </span>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={onRetest}
+                  className="text-gray-600 border-gray-200 hover:bg-gray-50 text-xs"
+                  data-testid={`button-retest-${title.toLowerCase()}`}
+                >
+                  <RotateCcw className="w-3 h-3 mr-1" />
+                  Re-run test
+                </Button>
+                <Button 
+                  size="sm" 
+                  className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-4"
+                  data-testid={`button-contact-us-${title.toLowerCase()}`}
+                >
+                  <Phone className="w-3 h-3 mr-1" />
+                  Get help improving
+                </Button>
+              </div>
             </div>
           </div>
         )}
