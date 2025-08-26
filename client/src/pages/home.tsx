@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -440,11 +440,66 @@ export default function Home() {
   const [urlInput, setUrlInput] = useState('');
   const [checkedUrl, setCheckedUrl] = useState('');
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [messageIndex, setMessageIndex] = useState(0);
+
+  const motivationalMessages = [
+    "Don't just have a website, have one that makes money. That's what we do at MaxMetrics",
+    "Your website works all day and night to bring you customers",
+    "A good website makes people want to buy from you",
+    "Turn visitors into buyers with a smart website",
+    "Your website give the first impression—make it a good one",
+    "More trust. More customers. More money. With a good website",
+    "A professional website makes your business look real and strong",
+    "If your website does not sell, it is losing you money",
+    "Your website is your shop, flyer, and card all in one",
+    "Bring in more people, sell more, and grow faster",
+    "Good looks + smart design = more happy customers",
+    "Every second counts—make your website easy to use"
+  ];
 
   const { data, isLoading, error, refetch } = useQuery<ScoreData>({
     queryKey: [`/api/check?url=${encodeURIComponent(checkedUrl)}`],
     enabled: !!checkedUrl,
   });
+
+  // Progress bar and message rotation effect
+  useEffect(() => {
+    if (!isLoading) {
+      setProgress(0);
+      setMessageIndex(0);
+      return;
+    }
+
+    const startTime = Date.now();
+    const duration = 60000; // 60 seconds
+
+    const progressInterval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const newProgress = Math.min((elapsed / duration) * 100, 100);
+      setProgress(newProgress);
+
+      if (newProgress >= 100) {
+        clearInterval(progressInterval);
+      }
+    }, 100);
+
+    const messageInterval = setInterval(() => {
+      setMessageIndex(prev => (prev + 1) % motivationalMessages.length);
+    }, 5000);
+
+    return () => {
+      clearInterval(progressInterval);
+      clearInterval(messageInterval);
+    };
+  }, [isLoading, motivationalMessages.length]);
+
+  // Jump to complete when data arrives
+  useEffect(() => {
+    if (data && isLoading === false) {
+      setProgress(100);
+    }
+  }, [data, isLoading]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -538,9 +593,25 @@ export default function Home() {
         {isLoading && (
           <Card className="mb-8">
             <CardContent className="p-12 text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Checking your site...</h3>
-              <p className="text-gray-600">This may take a few moments</p>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-6"></div>
+              
+              {/* Progress Bar */}
+              <div className="max-w-lg mx-auto mb-6">
+                <div className="bg-gray-200 rounded-full h-3 overflow-hidden">
+                  <div 
+                    className="bg-gradient-to-r from-blue-500 to-purple-600 h-full rounded-full transition-all duration-300 ease-out"
+                    style={{ width: `${progress}%` }}
+                  ></div>
+                </div>
+                <p className="text-sm text-gray-500 mt-2">Analyzing your website...</p>
+              </div>
+
+              {/* Rotating Motivational Messages */}
+              <div className="max-w-2xl mx-auto">
+                <p className="text-lg font-medium text-gray-700 leading-relaxed transition-all duration-500">
+                  {motivationalMessages[messageIndex]}
+                </p>
+              </div>
             </CardContent>
           </Card>
         )}
