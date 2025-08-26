@@ -414,6 +414,7 @@ function ScoreCard({
   description,
   url,
   category,
+  strategy = 'desktop',
   onRetest,
   onContactUs
 }: { 
@@ -423,6 +424,7 @@ function ScoreCard({
   description: string;
   url: string;
   category: string;
+  strategy?: 'mobile' | 'desktop';
   onRetest: () => void;
   onContactUs: () => void;
 }) {
@@ -458,6 +460,7 @@ function ScoreCard({
           title={title}
           url={url}
           category={category}
+          strategy={strategy}
         />
         
         {/* CTA for Poor Scores */}
@@ -500,6 +503,7 @@ export default function Home() {
   const [progress, setProgress] = useState(0);
   const [messageIndex, setMessageIndex] = useState(0);
   const [showFAQ, setShowFAQ] = useState(false);
+  const [strategy, setStrategy] = useState<'mobile' | 'desktop'>('desktop');
 
   const motivationalMessages = [
     "Don't just have a website, have one that makes money. That's what we do at MaxMetrics",
@@ -517,7 +521,7 @@ export default function Home() {
   ];
 
   const { data, isLoading, error, refetch } = useQuery<ScoreData>({
-    queryKey: [`/api/check?url=${encodeURIComponent(checkedUrl)}`],
+    queryKey: [`/api/check?url=${encodeURIComponent(checkedUrl)}&strategy=${strategy}`],
     enabled: !!checkedUrl,
     staleTime: 0, // Always refetch
     gcTime: 0, // Don't cache results (v5 syntax)
@@ -597,10 +601,13 @@ export default function Home() {
       setProgress(0);
       setMessageIndex(0);
       
-      // Invalidate and remove any cached data for this URL
-      const queryKey = [`/api/check?url=${encodeURIComponent(checkedUrl)}`];
-      queryClient.invalidateQueries({ queryKey });
-      queryClient.removeQueries({ queryKey });
+      // Invalidate and remove any cached data for this URL (both strategies)
+      const queryKeyDesktop = [`/api/check?url=${encodeURIComponent(checkedUrl)}&strategy=desktop`];
+      const queryKeyMobile = [`/api/check?url=${encodeURIComponent(checkedUrl)}&strategy=mobile`];
+      queryClient.invalidateQueries({ queryKey: queryKeyDesktop });
+      queryClient.invalidateQueries({ queryKey: queryKeyMobile });
+      queryClient.removeQueries({ queryKey: queryKeyDesktop });
+      queryClient.removeQueries({ queryKey: queryKeyMobile });
       
       // Force a fresh refetch
       refetch();
@@ -749,6 +756,34 @@ export default function Home() {
               <p className="text-gray-600">Here's how your website performed</p>
             </div>
 
+            {/* Mobile/Desktop Toggle */}
+            <div className="flex justify-center mb-6">
+              <div className="bg-gray-100 rounded-lg p-1 flex">
+                <button
+                  onClick={() => setStrategy('desktop')}
+                  className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${
+                    strategy === 'desktop'
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                  data-testid="button-desktop-view"
+                >
+                  🖥️ Desktop
+                </button>
+                <button
+                  onClick={() => setStrategy('mobile')}
+                  className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${
+                    strategy === 'mobile'
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                  data-testid="button-mobile-view"
+                >
+                  📱 Mobile
+                </button>
+              </div>
+            </div>
+
             {/* Score Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <ScoreCard
@@ -758,6 +793,7 @@ export default function Home() {
                 description="Fast loading boosts engagement"
                 url={data.url}
                 category="performance"
+                strategy={strategy}
                 onRetest={handleRerunTest}
                 onContactUs={handleContactUs}
               />
@@ -768,6 +804,7 @@ export default function Home() {
                 description="Great for search visibility"
                 url={data.url}
                 category="seo"
+                strategy={strategy}
                 onRetest={handleRerunTest}
                 onContactUs={handleContactUs}
               />
@@ -778,6 +815,7 @@ export default function Home() {
                 description="Helps everyone use your site"
                 url={data.url}
                 category="accessibility"
+                strategy={strategy}
                 onRetest={handleRerunTest}
                 onContactUs={handleContactUs}
               />
@@ -788,6 +826,7 @@ export default function Home() {
                 description="Secure and reliable"
                 url={data.url}
                 category="bestPractices"
+                strategy={strategy}
                 onRetest={handleRerunTest}
                 onContactUs={handleContactUs}
               />
