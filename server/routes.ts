@@ -72,7 +72,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Call Google PageSpeed Insights API with API key
-      const apiKey = process.env.GOOGLE_PAGESPEED_API_KEY;
+      const apiKey = process.env.PAGESPEED_API_KEY;
       const strategyParam = strategy === 'mobile' ? 'mobile' : 'desktop';
       const apiUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(validUrl)}&category=performance&category=seo&category=accessibility&category=best-practices&strategy=${strategyParam}&key=${apiKey}`;
       
