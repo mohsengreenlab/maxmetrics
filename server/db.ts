@@ -3,7 +3,11 @@ import { drizzle } from 'drizzle-orm/neon-serverless';
 import ws from "ws";
 import * as schema from "@shared/schema";
 
+// Configure Neon with better SSL handling
 neonConfig.webSocketConstructor = ws;
+neonConfig.wsProxy = (host) => `${host}:443/v2`;
+neonConfig.useSecureWebSocket = true;
+neonConfig.pipelineConnect = false;
 
 if (!process.env.DATABASE_URL) {
   throw new Error(
