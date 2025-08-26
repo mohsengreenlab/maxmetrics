@@ -109,3 +109,93 @@
     font-family: 'Inter', sans-serif;
   }
 }
+
+@layer components {
+  /* Shiny wave animation for the input */
+  .shiny-input {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .shiny-input::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent
+    );
+    transform: skewX(-25deg);
+    animation: shine 3s infinite;
+    pointer-events: none;
+    z-index: 1;
+  }
+  
+  .shiny-input:hover::before,
+  .shiny-input:focus-within::before {
+    animation: shine 1.5s infinite;
+  }
+  
+  @keyframes shine {
+    0% {
+      left: -100%;
+    }
+    50% {
+      left: 100%;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+  
+  /* Enhanced button animation */
+  .analyze-button {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .analyze-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transform: skewX(-25deg);
+    transition: left 0.6s;
+  }
+  
+  .analyze-button:hover::before {
+    left: 100%;
+  }
+  
+  /* Pulse animation for call-to-action feel */
+  .analyze-button {
+    animation: pulse-glow 2s infinite;
+  }
+  
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 30px rgba(59, 130, 246, 0.5), 0 0 40px rgba(147, 51, 234, 0.3);
+    }
+  }
+  
+  .analyze-button:hover {
+    animation: none;
+    box-shadow: 0 0 40px rgba(59, 130, 246, 0.6), 0 0 50px rgba(147, 51, 234, 0.4);
+  }
+}

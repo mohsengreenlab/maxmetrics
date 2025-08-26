@@ -481,48 +481,58 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Check Your Website's Performance
+      <main className="max-w-6xl mx-auto px-4 py-8">
+        {/* Hero Section with Action-Oriented Input */}
+        <div className="text-center mb-16">
+          <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+            Test Your Website's
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> Performance</span>
           </h2>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Get instant insights into your site's speed, SEO, and user experience. 
-            Better scores help attract visitors and boost engagement.
+          <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
+            Get instant insights that matter. See how fast your site loads, how well it ranks, and what you can improve to boost engagement.
           </p>
-        </div>
-
-        {/* URL Input Form */}
-        <Card className="mb-8">
-          <CardContent className="p-8">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="urlInput" className="block text-sm font-medium text-gray-700 mb-2">
-                  Enter your website URL
-                </Label>
-                <div className="flex space-x-3">
-                  <Input
-                    type="url"
-                    id="urlInput"
-                    placeholder="example.com"
-                    value={urlInput}
-                    onChange={(e) => setUrlInput(e.target.value)}
-                    className="flex-1"
-                    data-testid="input-url"
-                  />
-                  <Button 
-                    type="submit" 
-                    className="px-6"
-                    data-testid="button-check-site"
-                  >
-                    Check Site
-                  </Button>
+          
+          {/* Hero Input Form */}
+          <div className="max-w-2xl mx-auto">
+            <form onSubmit={handleSubmit} className="relative">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
+                <div className="relative bg-white rounded-2xl shadow-2xl border border-gray-100 p-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex-1 relative">
+                      <Input
+                        type="url"
+                        id="urlInput"
+                        placeholder="Enter your website URL (e.g., example.com)"
+                        value={urlInput}
+                        onChange={(e) => setUrlInput(e.target.value)}
+                        className="shiny-input text-lg py-4 px-6 border-0 bg-gray-50 focus:bg-white rounded-xl transition-all duration-300 placeholder:text-gray-400"
+                        data-testid="input-url"
+                      />
+                    </div>
+                    <Button 
+                      type="submit" 
+                      size="lg"
+                      className="analyze-button px-8 py-4 text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                      data-testid="button-check-site"
+                    >
+                      <span className="flex items-center space-x-2">
+                        <span>🚀</span>
+                        <span>Analyze Now</span>
+                      </span>
+                    </Button>
+                  </div>
                 </div>
               </div>
             </form>
-          </CardContent>
-        </Card>
+            
+            {/* Action Hint */}
+            <p className="text-sm text-gray-500 mt-4 flex items-center justify-center space-x-2">
+              <span>✨</span>
+              <span>Takes just 30 seconds • Get actionable insights instantly</span>
+            </p>
+          </div>
+        </div>
 
         {/* Tip Banner */}
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8">
