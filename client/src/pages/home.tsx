@@ -187,6 +187,10 @@ const faqData = [
   {
     question: "Can you sign an NDA?",
     answer: "Yes, we can sign a Non-Disclosure Agreement if you need extra assurance that your code and data stay confidential."
+  },
+  {
+    question: "How do you run the tests? How reliable are they?",
+    answer: "We use the official Google PageSpeed API (https://developers.google.com/speed/docs/insights/v5/get-started). However, depending on factors like network traffic, server response time, and the exact date and time, results may vary slightly. To ensure accuracy, we run several tests and statistically analyze the results before preparing your plan of action. Please note that on this website, each test is run only once — unless you click to run it again."
   }
 ];
 
