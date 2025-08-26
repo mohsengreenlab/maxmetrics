@@ -76,9 +76,9 @@ interface DetailedScoreData extends ScoreData {
 }
 
 function getScoreStatus(score: number) {
-  if (score >= 80) return { emoji: '✅', text: 'Looking great', color: 'green' };
-  if (score >= 60) return { emoji: '⚠️', text: 'Could be better', color: 'amber' };
-  return { emoji: '🔴', text: 'Needs improvement', color: 'red' };
+  if (score >= 90) return { emoji: '✅', text: 'Looking great', color: 'green' };
+  if (score >= 70) return { emoji: '⚠️', text: 'Room for improvement', color: 'amber' };
+  return { emoji: '❌', text: 'Needs urgent fixing', color: 'red' };
 }
 
 function validateUrl(url: string): string {
@@ -118,12 +118,8 @@ function validateUrl(url: string): string {
   }
 }
 
-// Score threshold configuration (stored in localStorage)
-const DEFAULT_SCORE_THRESHOLD = 90;
-function getScoreThreshold(): number {
-  const stored = localStorage.getItem('maxmetrics-score-threshold');
-  return stored ? parseInt(stored, 10) : DEFAULT_SCORE_THRESHOLD;
-}
+// Score threshold configuration
+const SCORE_THRESHOLD = 90;
 
 function TechnicalDetailsDialog({ 
   title, 
@@ -362,8 +358,7 @@ function ScoreCard({
   onContactUs: () => void;
 }) {
   const status = getScoreStatus(score);
-  const threshold = getScoreThreshold();
-  const needsImprovement = score < threshold;
+  const needsImprovement = score < SCORE_THRESHOLD;
   
   const borderColor = status.color === 'green' ? 'border-green-500' : 
                      status.color === 'amber' ? 'border-amber-500' : 'border-red-500';
@@ -403,7 +398,7 @@ function ScoreCard({
               <div className="flex items-center justify-center space-x-2">
                 <div className="w-2 h-2 rounded-full bg-orange-400"></div>
                 <span className="text-xs font-medium text-gray-600">
-                  Score below {threshold} - Room for improvement
+                  Score below {SCORE_THRESHOLD} - Room for improvement
                 </span>
               </div>
               
@@ -501,6 +496,20 @@ export default function Home() {
     }
   }, [data, isLoading]);
 
+  // Auto-scroll to progress bar when analysis starts
+  useEffect(() => {
+    if (isLoading) {
+      const timer = setTimeout(() => {
+        const progressSection = document.querySelector('.loading-section');
+        if (progressSection) {
+          progressSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 300); // Small delay to ensure the loading section is rendered
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (urlInput.trim()) {
@@ -591,7 +600,7 @@ export default function Home() {
 
         {/* Loading State */}
         {isLoading && (
-          <Card className="mb-8">
+          <Card className="mb-8 loading-section">
             <CardContent className="p-12 text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-6"></div>
               
