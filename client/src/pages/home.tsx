@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ExternalLink, Info, RotateCcw, CheckCircle, AlertTriangle, XCircle, Phone } from "lucide-react";
+import { ExternalLink, Info, RotateCcw, CheckCircle, AlertTriangle, XCircle, Wrench } from "lucide-react";
 import { ContactFormModal } from "@/components/contact-form-modal";
 
 interface Audit {
@@ -372,7 +372,8 @@ function ScoreCard({
     <Card className={`border-t-4 ${borderColor}`}>
       <CardContent className="pt-6 text-center">
         <div className="text-3xl mb-2">{icon}</div>
-        <h4 className="font-semibold text-gray-900 mb-2">{title}</h4>
+        <h4 className="font-semibold text-gray-900 mb-1">{title}</h4>
+        <p className="text-xs text-gray-500 mb-3">{description}</p>
         <div className={`text-3xl font-bold ${textColor} mb-2`} data-testid={`score-${title.toLowerCase()}`}>
           {score}
         </div>
@@ -382,7 +383,6 @@ function ScoreCard({
           </span>
           <span className={`text-sm ${statusTextColor} font-medium`}>{status.text}</span>
         </div>
-        <p className="text-xs text-gray-500 mt-2">{description}</p>
         
         {/* Technical Info Button */}
         <TechnicalDetailsDialog 
@@ -395,13 +395,6 @@ function ScoreCard({
         {needsImprovement && (
           <div className="mt-4 pt-4 border-t border-gray-100">
             <div className="text-center space-y-3">
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-2 h-2 rounded-full bg-orange-400"></div>
-                <span className="text-xs font-medium text-gray-600">
-                  Score below {SCORE_THRESHOLD} - Room for improvement
-                </span>
-              </div>
-              
               <div className="flex flex-col gap-2 justify-center">
                 <Button 
                   variant="outline" 
@@ -419,7 +412,7 @@ function ScoreCard({
                   className="bg-orange-600 hover:bg-orange-700 text-white text-xs px-4 font-bold border-2 border-orange-700 shadow-lg"
                   data-testid={`button-contact-us-${title.toLowerCase()}`}
                 >
-                  <Phone className="w-3 h-3 mr-1" />
+                  <Wrench className="w-3 h-3 mr-1" />
                   Fix My Website Today!
                 </Button>
               </div>
