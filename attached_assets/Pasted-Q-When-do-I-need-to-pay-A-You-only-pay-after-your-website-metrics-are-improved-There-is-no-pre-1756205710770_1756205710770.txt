@@ -14,7 +14,7 @@ Q: Is it safe to give you access to my website?
 A: Security is important to us. We will check with you which accesses are needed so you can evaluate your options. 
 
 Q: Who are your developers?  
-A: Our developers are qualified professionals who work remotely. To keep costs lower for you, many of them are based in developing countries.  
+A: Our developers are qualified professionals who work remotely. They consistently deliver high-quality solutions while maintaining clear communication and collaboration with clients."
 
 Q: Do you work directly on my live website?  
 A: We usually recommend working on a staging copy of your site first, and only applying changes to the live site once you approve.  
