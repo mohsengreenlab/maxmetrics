@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ExternalLink, Info, RotateCcw, CheckCircle, AlertTriangle, XCircle, Wrench } from "lucide-react";
 import { ContactFormModal } from "@/components/contact-form-modal";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Audit {
   id: string;
@@ -516,6 +517,7 @@ export default function Home() {
   const [strategy, setStrategy] = useState<'mobile' | 'desktop'>('desktop');
   const [dualData, setDualData] = useState<DualScoreData | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const motivationalMessages = [
     "Don't just have a website, have one that makes money. That's what we do at MaxMetrics",
@@ -800,81 +802,120 @@ export default function Home() {
               <p className="text-gray-600">Here's how your website performed</p>
             </div>
 
-            {/* Mobile/Desktop Toggle */}
-            <div className="flex justify-center mb-6">
-              <div className="bg-gray-100 rounded-lg p-1 flex">
-                <button
-                  onClick={() => setStrategy('desktop')}
-                  className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${
-                    strategy === 'desktop'
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                  data-testid="button-desktop-view"
-                >
-                  🖥️ Desktop
-                </button>
-                <button
-                  onClick={() => setStrategy('mobile')}
-                  className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${
-                    strategy === 'mobile'
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                  data-testid="button-mobile-view"
-                >
-                  📱 Mobile
-                </button>
-              </div>
+            {/* Enhanced Mobile/Desktop Toggle */}
+            <div className="flex justify-center mb-8">
+              <Card className="p-2 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 shadow-lg">
+                <CardContent className="p-0">
+                  <div className="text-xs font-medium text-blue-700 text-center mb-2 px-3 pt-1">
+                    View Results For
+                  </div>
+                  <div className="bg-white rounded-lg p-1 flex shadow-inner">
+                    <motion.button
+                      onClick={() => {
+                        if (strategy !== 'desktop') {
+                          setIsTransitioning(true);
+                          setTimeout(() => {
+                            setStrategy('desktop');
+                            setIsTransitioning(false);
+                          }, 150);
+                        }
+                      }}
+                      className={`px-8 py-3 rounded-md text-sm font-semibold transition-all duration-300 ${
+                        strategy === 'desktop'
+                          ? 'bg-blue-600 text-white shadow-md transform scale-105'
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      }`}
+                      data-testid="button-desktop-view"
+                      whileHover={{ scale: strategy === 'desktop' ? 1.05 : 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      🖥️ Desktop
+                    </motion.button>
+                    <motion.button
+                      onClick={() => {
+                        if (strategy !== 'mobile') {
+                          setIsTransitioning(true);
+                          setTimeout(() => {
+                            setStrategy('mobile');
+                            setIsTransitioning(false);
+                          }, 150);
+                        }
+                      }}
+                      className={`px-8 py-3 rounded-md text-sm font-semibold transition-all duration-300 ${
+                        strategy === 'mobile'
+                          ? 'bg-blue-600 text-white shadow-md transform scale-105'
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      }`}
+                      data-testid="button-mobile-view"
+                      whileHover={{ scale: strategy === 'mobile' ? 1.05 : 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      📱 Mobile
+                    </motion.button>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
-            {/* Score Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <ScoreCard
-                title="Performance"
-                icon="🚀"
-                score={data.scores.performance}
-                description="Fast loading boosts engagement"
-                url={data.url}
-                category="performance"
-                strategy={strategy}
-                onRetest={handleRerunTest}
-                onContactUs={handleContactUs}
-              />
-              <ScoreCard
-                title="SEO"
-                icon="🔍"
-                score={data.scores.seo}
-                description="Great for search visibility"
-                url={data.url}
-                category="seo"
-                strategy={strategy}
-                onRetest={handleRerunTest}
-                onContactUs={handleContactUs}
-              />
-              <ScoreCard
-                title="Accessibility"
-                icon="♿"
-                score={data.scores.accessibility}
-                description="Helps everyone use your site"
-                url={data.url}
-                category="accessibility"
-                strategy={strategy}
-                onRetest={handleRerunTest}
-                onContactUs={handleContactUs}
-              />
-              <ScoreCard
-                title="Best Practices"
-                icon="⭐"
-                score={data.scores.bestPractices}
-                description="Secure and reliable"
-                url={data.url}
-                category="bestPractices"
-                strategy={strategy}
-                onRetest={handleRerunTest}
-                onContactUs={handleContactUs}
-              />
-            </div>
+            {/* Score Cards with Animation */}
+            <AnimatePresence mode="wait">
+              <motion.div 
+                key={`${strategy}-${data.url}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ 
+                  opacity: isTransitioning ? 0.3 : 1, 
+                  y: isTransitioning ? 10 : 0 
+                }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+              >
+                <ScoreCard
+                  title="Performance"
+                  icon="🚀"
+                  score={data.scores.performance}
+                  description="Fast loading boosts engagement"
+                  url={data.url}
+                  category="performance"
+                  strategy={strategy}
+                  onRetest={handleRerunTest}
+                  onContactUs={handleContactUs}
+                />
+                <ScoreCard
+                  title="SEO"
+                  icon="🔍"
+                  score={data.scores.seo}
+                  description="Great for search visibility"
+                  url={data.url}
+                  category="seo"
+                  strategy={strategy}
+                  onRetest={handleRerunTest}
+                  onContactUs={handleContactUs}
+                />
+                <ScoreCard
+                  title="Accessibility"
+                  icon="♿"
+                  score={data.scores.accessibility}
+                  description="Helps everyone use your site"
+                  url={data.url}
+                  category="accessibility"
+                  strategy={strategy}
+                  onRetest={handleRerunTest}
+                  onContactUs={handleContactUs}
+                />
+                <ScoreCard
+                  title="Best Practices"
+                  icon="⭐"
+                  score={data.scores.bestPractices}
+                  description="Secure and reliable"
+                  url={data.url}
+                  category="bestPractices"
+                  strategy={strategy}
+                  onRetest={handleRerunTest}
+                  onContactUs={handleContactUs}
+                />
+              </motion.div>
+            </AnimatePresence>
 
 
             {/* Disclaimer */}
