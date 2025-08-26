@@ -15,7 +15,7 @@
   --secondary: hsl(210, 25%, 7.8431%);
   --secondary-foreground: hsl(0, 0%, 100%);
   --muted: hsl(240, 1.9608%, 90%);
-  --muted-foreground: hsl(210, 25%, 7.8431%);
+  --muted-foreground: hsl(210, 10%, 45%);
   --accent: hsl(211.5789, 51.3514%, 92.7451%);
   --accent-foreground: hsl(203.8863, 88.2845%, 53.1373%);
   --destructive: hsl(356.3033, 90.5579%, 54.3137%);
@@ -64,7 +64,7 @@
   --secondary: hsl(195.0000, 15.3846%, 94.9020%);
   --secondary-foreground: hsl(210, 25%, 7.8431%);
   --muted: hsl(0, 0%, 9.4118%);
-  --muted-foreground: hsl(210, 3.3898%, 46.2745%);
+  --muted-foreground: hsl(210, 3%, 55%);
   --accent: hsl(205.7143, 70%, 7.8431%);
   --accent-foreground: hsl(203.7736, 87.6033%, 52.5490%);
   --destructive: hsl(356.3033, 90.5579%, 54.3137%);
@@ -254,6 +254,28 @@
 .hero-section {
   background: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.03) 0%, transparent 70%);
   padding: 80px 0;
+}
+
+/* Ensure placeholder text is properly faded and not bold */
+input::placeholder {
+  font-weight: 400 !important;
+  opacity: 0.6;
+  color: hsl(var(--muted-foreground));
+}
+
+input::-webkit-input-placeholder {
+  font-weight: 400 !important;
+  opacity: 0.6;
+}
+
+input::-moz-placeholder {
+  font-weight: 400 !important;
+  opacity: 0.6;
+}
+
+input:-ms-input-placeholder {
+  font-weight: 400 !important;
+  opacity: 0.6;
 }
 
 @media (max-width: 768px) {
