@@ -198,6 +198,10 @@ const faqData = [
   {
     question: "How do you run the tests? How reliable are they?",
     answer: "We use the official Google PageSpeed API (https://developers.google.com/speed/docs/insights/v5/get-started). However, depending on factors like network traffic, server response time, and the exact date and time, results may vary slightly. To ensure accuracy, we run several tests and statistically analyze the results before preparing your plan of action. Please note that on this website, each test is run only once — unless you click to run it again."
+  },
+  {
+    question: "What's the difference between Mobile mode and Desktop mode?",
+    answer: "The Google PageSpeed API runs tests in two ways: Mobile mode simulates how your website performs on a smartphone (slower network, smaller screen, touch interactions), while Desktop mode tests performance on a desktop computer (faster network, larger screen, mouse/keyboard use). Since many visitors browse from phones, both views are important to understand your site's real performance."
   }
 ];
 
