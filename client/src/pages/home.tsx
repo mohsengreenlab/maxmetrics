@@ -493,7 +493,7 @@ export default function Home() {
           </p>
           
           {/* Hero Input Form */}
-          <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-6">
+          <form onSubmit={handleSubmit} className="flex justify-center">
             <div className="hero-input-container">
               <div className="hero-input-ellipse">
                 <div className="hero-input-wrapper">
@@ -506,16 +506,16 @@ export default function Home() {
                     className="hero-input"
                     data-testid="input-url"
                   />
+                  <button 
+                    type="submit" 
+                    className="hero-analyze-button"
+                    data-testid="button-check-site"
+                  >
+                    ✨ Analyze Website
+                  </button>
                 </div>
               </div>
             </div>
-            <button 
-              type="submit" 
-              className="hero-analyze-button"
-              data-testid="button-check-site"
-            >
-              ✨ Analyze Website
-            </button>
           </form>
         </div>
 
