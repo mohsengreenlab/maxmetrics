@@ -532,26 +532,40 @@ export function ContactFormModal({ open, onOpenChange, websiteUrl }: ContactForm
                       <SelectTrigger className="w-32">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="max-h-[300px]">
-                        <div className="flex items-center px-3 pb-2 pt-2 border-b sticky top-0 bg-white">
-                          <Search className="w-4 h-4 mr-2 text-gray-400" />
-                          <Input
-                            placeholder="Search countries..."
-                            value={countrySearch}
-                            onChange={(e) => setCountrySearch(e.target.value)}
-                            className="border-0 p-0 h-6 text-sm focus-visible:ring-0 focus-visible:ring-offset-0"
-                          />
-                        </div>
-                        {filteredCountries.map((item, index) => (
-                          <SelectItem key={`${item.code}-${item.iso}-${index}`} value={item.code}>
-                            {item.code} {item.country}
-                          </SelectItem>
-                        ))}
-                        {filteredCountries.length === 0 && (
-                          <div className="px-3 py-2 text-sm text-gray-500 text-center">
-                            No countries found
+                      <SelectContent className="p-0">
+                        {/* Fixed Search Header */}
+                        <div className="sticky top-0 z-10 bg-white border-b border-gray-200 p-3">
+                          <div className="flex items-center space-x-2">
+                            <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                            <Input
+                              placeholder="Search countries..."
+                              value={countrySearch}
+                              onChange={(e) => setCountrySearch(e.target.value)}
+                              className="h-8 text-sm border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                            />
                           </div>
-                        )}
+                        </div>
+                        
+                        {/* Scrollable Country List */}
+                        <div className="max-h-[250px] overflow-y-auto">
+                          {filteredCountries.map((item, index) => (
+                            <SelectItem 
+                              key={`${item.code}-${item.iso}-${index}`} 
+                              value={item.code}
+                              className="px-3 py-2 hover:bg-gray-50"
+                            >
+                              <div className="flex items-center justify-between w-full">
+                                <span className="font-medium text-gray-900">{item.country}</span>
+                                <span className="text-sm text-gray-500 ml-2">{item.code}</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                          {filteredCountries.length === 0 && (
+                            <div className="px-3 py-6 text-sm text-gray-500 text-center">
+                              No countries found
+                            </div>
+                          )}
+                        </div>
                       </SelectContent>
                     </Select>
                     <FormControl>
