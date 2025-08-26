@@ -468,7 +468,7 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 py-4">
+        <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
@@ -649,7 +649,7 @@ export default function Home() {
         <Card className="mt-12">
           <CardContent className="p-8 text-center">
             <h3 className="text-2xl font-bold text-gray-900 mb-4">Ready to Optimize Your Website?</h3>
-            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+            <p className="text-gray-600 mb-6 max-w-4xl xl:max-w-5xl mx-auto">
               Our team at PartnerSystems can help you improve these scores and create 
               a faster, more engaging experience for your visitors.
             </p>
@@ -676,7 +676,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="bg-white border-t mt-16">
-        <div className="max-w-4xl mx-auto px-4 py-8 text-center">
+        <div className="max-w-7xl mx-auto px-4 py-8 text-center">
           <div className="flex items-center justify-center space-x-3 mb-4">
             <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center">
               <span className="text-white font-bold text-xs">P</span>
