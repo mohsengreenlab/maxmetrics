@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -519,7 +520,7 @@ export default function Home() {
     queryKey: [`/api/check?url=${encodeURIComponent(checkedUrl)}`],
     enabled: !!checkedUrl,
     staleTime: 0, // Always refetch
-    cacheTime: 0, // Don't cache results
+    gcTime: 0, // Don't cache results (v5 syntax)
   });
 
   // Progress bar and message rotation effect
@@ -590,17 +591,19 @@ export default function Home() {
   };
 
   const handleRerunTest = () => {
-    // Ensure we have the current URL and trigger a fresh test
+    // Clear any cached results and start fresh analysis
     if (checkedUrl) {
-      // Normalize the URL again to ensure consistency
-      const normalizedUrl = validateUrl(checkedUrl);
-      if (normalizedUrl !== checkedUrl) {
-        setCheckedUrl(normalizedUrl);
-        setUrlInput(normalizedUrl);
-      } else {
-        // If URL is already normalized, force refetch
-        refetch();
-      }
+      // Reset progress indicators
+      setProgress(0);
+      setMessageIndex(0);
+      
+      // Invalidate and remove any cached data for this URL
+      const queryKey = [`/api/check?url=${encodeURIComponent(checkedUrl)}`];
+      queryClient.invalidateQueries({ queryKey });
+      queryClient.removeQueries({ queryKey });
+      
+      // Force a fresh refetch
+      refetch();
     }
   };
 
