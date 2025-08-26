@@ -121,6 +121,66 @@ function validateUrl(url: string): string {
 // Score threshold configuration
 const SCORE_THRESHOLD = 90;
 
+// FAQ data parsed from the text file
+const faqData = [
+  {
+    question: "When do I need to pay?",
+    answer: "You only pay after your website metrics are improved. There is no pre-payment required."
+  },
+  {
+    question: "How much does it cost and how long will it take?",
+    answer: "Delivery time and fees depend on the workload. Each client is charged based on their real needs, not fixed packages."
+  },
+  {
+    question: "What payment methods do you accept?",
+    answer: "We accept bank transfers, Visa Card, and cryptocurrency."
+  },
+  {
+    question: "Will you document the work you do?",
+    answer: "Yes, we document every single change we make so you know exactly what was done."
+  },
+  {
+    question: "Is it safe to give you access to my website?",
+    answer: "Security is important to us. We will check with you which accesses are needed so you can evaluate your options."
+  },
+  {
+    question: "Who are your developers?",
+    answer: "Our developers are qualified professionals who work remotely. To keep costs lower for you, many of them are based in developing countries."
+  },
+  {
+    question: "Do you work directly on my live website?",
+    answer: "We usually recommend working on a staging copy of your site first, and only applying changes to the live site once you approve."
+  },
+  {
+    question: "What happens if something breaks on my site?",
+    answer: "With our experience and expertise, issues are very unlikely to happen. We carefully monitor metrics throughout the process to ensure everything runs smoothly. For extra safety, we always take full backups of your site before making any changes, so if needed, we can restore it to its original state quickly."
+  },
+  {
+    question: "How do I give you access safely?",
+    answer: "We guide you step by step on what access is needed. You can create a temporary account for us and remove it once the job is done."
+  },
+  {
+    question: "What kind of improvements can I expect?",
+    answer: "We focus on website speed, performance, SEO, and technical optimizations."
+  },
+  {
+    question: "How will I see the results?",
+    answer: "We provide before-and-after metrics (such as performance scores, speed tests, or SEO stats) so you can clearly see the improvements. You will only pay afterwards."
+  },
+  {
+    question: "What if I'm not happy with the results?",
+    answer: "Since you only pay after improvements are proven, there is no risk on your side."
+  },
+  {
+    question: "Do you also provide ongoing maintenance?",
+    answer: "Yes, we can provide regular monitoring and updates if you want continuous improvements, billed separately."
+  },
+  {
+    question: "Can you sign an NDA?",
+    answer: "Yes, we can sign a Non-Disclosure Agreement if you need extra assurance that your code and data stay confidential."
+  }
+];
+
 function TechnicalDetailsDialog({ 
   title, 
   url, 
@@ -430,6 +490,7 @@ export default function Home() {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [progress, setProgress] = useState(0);
   const [messageIndex, setMessageIndex] = useState(0);
+  const [showFAQ, setShowFAQ] = useState(false);
 
   const motivationalMessages = [
     "Don't just have a website, have one that makes money. That's what we do at MaxMetrics",
@@ -519,6 +580,19 @@ export default function Home() {
 
   const handleContactUs = () => {
     setIsContactModalOpen(true);
+  };
+
+  const handleLearnMore = () => {
+    setShowFAQ(!showFAQ);
+    // Scroll to FAQ section when opened
+    if (!showFAQ) {
+      setTimeout(() => {
+        const faqSection = document.querySelector('#faq-section');
+        if (faqSection) {
+          faqSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
   };
 
   return (
@@ -720,15 +794,51 @@ export default function Home() {
               </Button>
               <Button 
                 variant="outline" 
-                onClick={handleContactUs}
+                onClick={handleLearnMore}
                 className="px-6 py-3"
                 data-testid="button-learn-more"
               >
-                Learn More
+                {showFAQ ? 'Hide FAQ' : 'Learn More'}
               </Button>
             </div>
           </CardContent>
         </Card>
+
+        {/* FAQ Section */}
+        {showFAQ && (
+          <Card className="mt-8" id="faq-section">
+            <CardContent className="p-8">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">Frequently Asked Questions</h3>
+              <Accordion type="single" collapsible className="w-full">
+                {faqData.map((faq, index) => (
+                  <AccordionItem key={index} value={`item-${index}`}>
+                    <AccordionTrigger 
+                      className="text-left hover:no-underline"
+                      data-testid={`faq-question-${index}`}
+                    >
+                      <span className="font-medium text-gray-900">{faq.question}</span>
+                    </AccordionTrigger>
+                    <AccordionContent 
+                      className="text-gray-600 pb-6"
+                      data-testid={`faq-answer-${index}`}
+                    >
+                      {faq.answer}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+              <div className="mt-8 text-center">
+                <Button 
+                  onClick={handleContactUs}
+                  className="px-6 py-3"
+                  data-testid="button-contact-after-faq"
+                >
+                  Still Have Questions? Contact Us
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </main>
 
       {/* Footer */}
