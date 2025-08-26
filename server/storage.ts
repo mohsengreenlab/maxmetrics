@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type Contact, type InsertContact, users, contacts } from "@shared/schema";
+import { type User, type InsertUser, type Contact, type InsertContact, type UrlSubmission, type InsertUrlSubmission, users, contacts, urlSubmissions } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
@@ -11,6 +11,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   createContact(contact: InsertContact): Promise<Contact>;
+  createUrlSubmission(urlSubmission: InsertUrlSubmission): Promise<UrlSubmission>;
 }
 
 export class MemStorage implements IStorage {
@@ -49,6 +50,16 @@ export class MemStorage implements IStorage {
     this.contacts.set(id, contact);
     return contact;
   }
+
+  async createUrlSubmission(insertUrlSubmission: InsertUrlSubmission): Promise<UrlSubmission> {
+    const id = randomUUID();
+    const urlSubmission: UrlSubmission = {
+      ...insertUrlSubmission,
+      id,
+      submittedAt: new Date()
+    };
+    return urlSubmission;
+  }
 }
 
 export class DatabaseStorage implements IStorage {
@@ -69,6 +80,11 @@ export class DatabaseStorage implements IStorage {
 
   async createContact(insertContact: InsertContact): Promise<Contact> {
     const result = await db.insert(contacts).values(insertContact).returning();
+    return result[0];
+  }
+
+  async createUrlSubmission(insertUrlSubmission: InsertUrlSubmission): Promise<UrlSubmission> {
+    const result = await db.insert(urlSubmissions).values(insertUrlSubmission).returning();
     return result[0];
   }
 }

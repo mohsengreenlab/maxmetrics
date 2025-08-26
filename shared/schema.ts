@@ -19,6 +19,12 @@ export const contacts = pgTable("contacts", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const urlSubmissions = pgTable("url_submissions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  url: text("url").notNull(),
+  submittedAt: timestamp("submitted_at").defaultNow().notNull(),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
@@ -52,7 +58,14 @@ export const insertContactSchema = createInsertSchema(contacts).omit({
     }, "Please enter a valid website URL (e.g., example.com or https://example.com)"),
 });
 
+export const insertUrlSubmissionSchema = createInsertSchema(urlSubmissions).omit({
+  id: true,
+  submittedAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type InsertContact = z.infer<typeof insertContactSchema>;
 export type Contact = typeof contacts.$inferSelect;
+export type InsertUrlSubmission = z.infer<typeof insertUrlSubmissionSchema>;
+export type UrlSubmission = typeof urlSubmissions.$inferSelect;

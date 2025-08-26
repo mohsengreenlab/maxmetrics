@@ -101,6 +101,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         bestPractices: Math.round((data.lighthouseResult.categories["best-practices"]?.score || 0) * 100),
       };
 
+      // Record the URL submission in database
+      try {
+        await storage.createUrlSubmission({ url: validUrl });
+      } catch (error) {
+        console.error("Failed to record URL submission:", error);
+        // Don't fail the request if URL tracking fails
+      }
+
       // Return detailed data if requested
       if (details === 'true') {
         res.json({
