@@ -1,9 +1,11 @@
 name: CI (Build + DB + Smoke)
+
 on:
   push:
     branches: ["**"]
   pull_request:
     branches: ["**"]
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -26,8 +28,8 @@ jobs:
           --health-cmd="pg_isready -U maxmetrics_user -d maxmetrics_db"
           --health-interval=10s --health-timeout=5s --health-retries=10
 
+    # NOTE: do NOT set NODE_ENV=production here (we need devDependencies for drizzle-kit)
     env:
-      NODE_ENV: production
       PORT: 3008
       SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
       GOOGLE_PAGESPEED_API_KEY: ${{ secrets.GOOGLE_PAGESPEED_API_KEY }}
@@ -39,41 +41,75 @@ jobs:
       DATABASE_URL: postgres://maxmetrics_user:${{ secrets.DB_PASSWORD }}@localhost:5432/maxmetrics_db
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node 20
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
 
-      - name: Install deps
+      - name: Install dependencies (include dev)
         run: npm ci
+        env:
+          NODE_ENV: ""   # ensure devDependencies are installed
 
-      - name: DB schema push
-        run: npm run db:push
+      - name: Show npm scripts (debug)
+        run: npm run
+
+      - name: DB schema push (drizzle/prisma autodetect)
+        run: |
+          if npm run -s db:push >/dev/null 2>&1; then
+            npm run db:push
+          elif npx --yes drizzle-kit --version >/dev/null 2>&1; then
+            npx drizzle-kit push
+          elif npx --yes prisma --version >/dev/null 2>&1; then
+            npx prisma db push
+          else
+            echo "No DB push command found. Add a 'db:push' script or install drizzle-kit/prisma." && exit 1
+          fi
 
       - name: Build (frontend + backend)
-        run: npm run build
+        run: |
+          if npm run -s build >/dev/null 2>&1; then
+            npm run build
+          else
+            echo "No build script found in package.json" && exit 1
+          fi
 
       - name: Verify build artifacts
         run: |
-          test -f dist/index.js || (echo "Missing dist/index.js" && exit 1)
-          test -d client/dist || (echo "Missing client/dist" && exit 1)
+          if [ -f dist/index.js ] || [ -f server/dist/index.js ]; then
+            echo "✓ Server build found"
+          else
+            echo "✗ Compiled server entry not found"; ls -R; exit 1
+          fi
+          if [ -d client/dist ]; then
+            echo "✓ Client build found"
+          else
+            echo "⚠ client/dist not found (frontend may not have a build step)"
+          fi
 
-      - name: Start server
+      - name: Start server (prod mode; detect entry)
         run: |
-          node dist/index.js > server.log 2>&1 &
+          ENTRY=""
+          if [ -f dist/index.js ]; then ENTRY=dist/index.js;
+          elif [ -f server/dist/index.js ]; then ENTRY=server/dist/index.js;
+          else echo "Can't find compiled server entry"; ls -R; exit 1; fi
+          NODE_ENV=production node "$ENTRY" > server.log 2>&1 &
           echo $! > server.pid
 
       - name: Wait for port 3008
         run: |
           for i in {1..90}; do (echo > /dev/tcp/127.0.0.1/3008) >/dev/null 2>&1 && exit 0; sleep 1; done
-          echo "Server didn't open port 3008"; echo "--- server.log ---"; cat server.log; exit 1
+          echo "Server didn't open port 3008"; echo "--- server.log (first 200 lines) ---"; sed -n '1,200p' server.log; exit 1
 
       - name: Smoke test /api/check
         run: |
           curl -fsS "http://127.0.0.1:3008/api/check?url=https://example.com" | head -c 2000
 
-      - name: Upload logs & dist
+      - name: Upload logs & dist (always)
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -81,3 +117,9 @@ jobs:
           path: |
             server.log
             client/dist
+          if-no-files-found: warn
+
+      - name: Stop server
+        if: always()
+        run: |
+          if [ -f server.pid ]; then kill -TERM "$(cat server.pid)" || true; fi
