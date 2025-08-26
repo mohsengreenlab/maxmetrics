@@ -519,18 +519,20 @@ export default function Home() {
           </form>
         </div>
 
-        {/* Tip Banner */}
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8">
-          <div className="flex items-start space-x-3">
-            <span className="text-amber-600 text-xl">💡</span>
-            <div>
-              <h3 className="font-medium text-amber-800 mb-1">Pro Tip</h3>
-              <p className="text-amber-700 text-sm">
-                Run the test a few times — then use the average for the most reliable insights.
-              </p>
+        {/* Tip Banner - Only show during loading */}
+        {isLoading && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8">
+            <div className="flex items-start space-x-3">
+              <span className="text-amber-600 text-xl">💡</span>
+              <div>
+                <h3 className="font-medium text-amber-800 mb-1">Pro Tip</h3>
+                <p className="text-amber-700 text-sm">
+                  Run the test a few times — then use the average for the most reliable insights.
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Loading State */}
         {isLoading && (
