@@ -481,13 +481,13 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Hero Section */}
         <div className="hero-section text-center mb-12">
           <h2 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
             Check Your Website's Performance
           </h2>
-          <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed">
             Get instant insights into your site's speed, SEO, and user experience. 
             Better scores help attract visitors and boost engagement.
           </p>

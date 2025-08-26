@@ -138,7 +138,7 @@
   position: relative;
   display: inline-block;
   width: 100%;
-  max-width: 800px;
+  max-width: 1200px;
 }
 
 .hero-input-ellipse {
@@ -254,4 +254,26 @@
 .hero-section {
   background: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.03) 0%, transparent 70%);
   padding: 80px 0;
+}
+
+@media (max-width: 768px) {
+  .hero-input-container {
+    max-width: 100%;
+    padding: 0 16px;
+  }
+  
+  .hero-input-wrapper {
+    padding: 6px 6px 6px 20px;
+    gap: 12px;
+  }
+  
+  .hero-input {
+    font-size: 1rem;
+    padding: 16px 0;
+  }
+  
+  .hero-analyze-button {
+    font-size: 0.875rem;
+    padding: 14px 20px;
+  }
 }
