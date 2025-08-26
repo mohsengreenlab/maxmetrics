@@ -29,7 +29,27 @@ export const insertContactSchema = createInsertSchema(contacts).omit({
   createdAt: true,
 }).extend({
   email: z.string().email("Please enter a valid email address"),
-  website: z.string().url("Please enter a valid website URL"),
+  website: z.string()
+    .min(1, "Website URL is required")
+    .refine((url) => {
+      // Allow domain names without protocol (like kerit.com.ru)
+      const trimmedUrl = url.trim();
+      
+      // If it already has a protocol, validate as URL
+      if (trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://')) {
+        try {
+          new URL(trimmedUrl);
+          return true;
+        } catch {
+          return false;
+        }
+      }
+      
+      // Otherwise, check if it's a valid domain name
+      // Basic domain validation: must have at least one dot and valid characters
+      const domainRegex = /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+      return domainRegex.test(trimmedUrl);
+    }, "Please enter a valid website URL (e.g., example.com or https://example.com)"),
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
