@@ -52,6 +52,12 @@ interface ScoreData {
   };
 }
 
+interface DualScoreData {
+  url: string;
+  desktop: ScoreData;
+  mobile: ScoreData;
+}
+
 interface DetailedScoreData extends ScoreData {
   strategy: 'mobile' | 'desktop';
   details: {
@@ -508,6 +514,8 @@ export default function Home() {
   const [messageIndex, setMessageIndex] = useState(0);
   const [showFAQ, setShowFAQ] = useState(false);
   const [strategy, setStrategy] = useState<'mobile' | 'desktop'>('desktop');
+  const [dualData, setDualData] = useState<DualScoreData | null>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   const motivationalMessages = [
     "Don't just have a website, have one that makes money. That's what we do at MaxMetrics",
@@ -524,12 +532,27 @@ export default function Home() {
     "Every second counts—make your website easy to use"
   ];
 
-  const { data, isLoading, error, refetch } = useQuery<ScoreData>({
-    queryKey: [`/api/check?url=${encodeURIComponent(checkedUrl)}&strategy=${strategy}`],
+  // Fetch both mobile and desktop data simultaneously
+  const { data: desktopData, isLoading: isLoadingDesktop, error: desktopError } = useQuery<ScoreData>({
+    queryKey: [`/api/check?url=${encodeURIComponent(checkedUrl)}&strategy=desktop`],
     enabled: !!checkedUrl,
-    staleTime: 0, // Always refetch
-    gcTime: 0, // Don't cache results (v5 syntax)
+    staleTime: 0,
+    gcTime: 0,
   });
+
+  const { data: mobileData, isLoading: isLoadingMobile, error: mobileError } = useQuery<ScoreData>({
+    queryKey: [`/api/check?url=${encodeURIComponent(checkedUrl)}&strategy=mobile`],
+    enabled: !!checkedUrl,
+    staleTime: 0,
+    gcTime: 0,
+  });
+
+  // Combine loading states
+  const isLoading = isLoadingDesktop || isLoadingMobile;
+  const error = desktopError || mobileError;
+
+  // Current data based on selected strategy
+  const data = dualData ? dualData[strategy] : null;
 
   // Progress bar and message rotation effect
   useEffect(() => {
@@ -562,12 +585,21 @@ export default function Home() {
     };
   }, [isLoading, motivationalMessages.length]);
 
-  // Jump to complete when data arrives
+  // Update dual data when both results arrive
   useEffect(() => {
-    if (data && isLoading === false) {
+    if (desktopData && mobileData && !isLoading) {
+      setDualData({
+        url: checkedUrl,
+        desktop: desktopData,
+        mobile: mobileData
+      });
+      setFetchError(null);
       setProgress(100);
+    } else if ((desktopError || mobileError) && !isLoading) {
+      setFetchError(desktopError?.message || mobileError?.message || 'An error occurred');
+      setDualData(null);
     }
-  }, [data, isLoading]);
+  }, [desktopData, mobileData, isLoading, desktopError, mobileError, checkedUrl]);
 
   // Auto-scroll to progress bar when analysis starts
   useEffect(() => {
@@ -594,8 +626,15 @@ export default function Home() {
   };
 
   const handleTryAgain = () => {
-    // Force a fresh request by clearing any potential cache and refetching
-    refetch();
+    // Clear error and dual data, then trigger refetch
+    setFetchError(null);
+    setDualData(null);
+    
+    // Invalidate both queries to force refetch
+    const queryKeyDesktop = [`/api/check?url=${encodeURIComponent(checkedUrl)}&strategy=desktop`];
+    const queryKeyMobile = [`/api/check?url=${encodeURIComponent(checkedUrl)}&strategy=mobile`];
+    queryClient.invalidateQueries({ queryKey: queryKeyDesktop });
+    queryClient.invalidateQueries({ queryKey: queryKeyMobile });
   };
 
   const handleRerunTest = () => {
@@ -604,6 +643,8 @@ export default function Home() {
       // Reset progress indicators
       setProgress(0);
       setMessageIndex(0);
+      setDualData(null);
+      setFetchError(null);
       
       // Invalidate and remove any cached data for this URL (both strategies)
       const queryKeyDesktop = [`/api/check?url=${encodeURIComponent(checkedUrl)}&strategy=desktop`];
@@ -612,9 +653,6 @@ export default function Home() {
       queryClient.invalidateQueries({ queryKey: queryKeyMobile });
       queryClient.removeQueries({ queryKey: queryKeyDesktop });
       queryClient.removeQueries({ queryKey: queryKeyMobile });
-      
-      // Force a fresh refetch
-      refetch();
     }
   };
 
@@ -733,12 +771,14 @@ export default function Home() {
         )}
 
         {/* Error State */}
-        {error && (
+        {(error || fetchError) && (
           <Card className="mb-8">
             <CardContent className="p-8 text-center">
               <span className="text-6xl mb-4 block">😞</span>
               <h3 className="text-lg font-medium text-gray-900 mb-2">Oops...</h3>
-              <p className="text-gray-600 mb-4">Couldn't connect to the API from your network!</p>
+              <p className="text-gray-600 mb-4">
+                {fetchError || "Couldn't connect to the API from your network!"}
+              </p>
               <Button 
                 onClick={handleTryAgain}
                 data-testid="button-try-again"
