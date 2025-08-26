@@ -655,7 +655,7 @@ export default function Home() {
               <div className="hero-input-ellipse">
                 <div className="hero-input-wrapper">
                   <input
-                    type="url"
+                    type="text"
                     id="urlInput"
                     placeholder="Enter your website URL... (e.g., example.com)"
                     value={urlInput}
