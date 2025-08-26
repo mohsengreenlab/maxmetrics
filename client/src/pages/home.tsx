@@ -483,46 +483,41 @@ export default function Home() {
 
       <main className="max-w-4xl mx-auto px-4 py-8">
         {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+        <div className="hero-section text-center mb-12">
+          <h2 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
             Check Your Website's Performance
           </h2>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
             Get instant insights into your site's speed, SEO, and user experience. 
             Better scores help attract visitors and boost engagement.
           </p>
-        </div>
-
-        {/* URL Input Form */}
-        <Card className="mb-8">
-          <CardContent className="p-8">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="urlInput" className="block text-sm font-medium text-gray-700 mb-2">
-                  Enter your website URL
-                </Label>
-                <div className="flex space-x-3">
-                  <Input
+          
+          {/* Hero Input Form */}
+          <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-6">
+            <div className="hero-input-container">
+              <div className="hero-input-ellipse">
+                <div className="hero-input-wrapper">
+                  <input
                     type="url"
                     id="urlInput"
-                    placeholder="example.com"
+                    placeholder="Enter your website URL... (e.g., example.com)"
                     value={urlInput}
                     onChange={(e) => setUrlInput(e.target.value)}
-                    className="flex-1"
+                    className="hero-input"
                     data-testid="input-url"
                   />
-                  <Button 
-                    type="submit" 
-                    className="px-6"
-                    data-testid="button-check-site"
-                  >
-                    Check Site
-                  </Button>
                 </div>
               </div>
-            </form>
-          </CardContent>
-        </Card>
+            </div>
+            <button 
+              type="submit" 
+              className="hero-analyze-button"
+              data-testid="button-check-site"
+            >
+              ✨ Analyze Website
+            </button>
+          </form>
+        </div>
 
         {/* Tip Banner */}
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8">
