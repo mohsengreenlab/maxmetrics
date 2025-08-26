@@ -85,11 +85,14 @@ function validateUrl(url: string): string {
   // Remove leading/trailing whitespace
   url = url.trim();
   
-  // Remove trailing slashes
+  // Remove trailing slashes completely
   url = url.replace(/\/+$/, '');
   
-  // Add protocol if missing
-  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+  // Handle common prefixes
+  if (url.startsWith('www.')) {
+    url = 'https://' + url;
+  } else if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    // Add https:// if no protocol is specified
     url = 'https://' + url;
   }
   
@@ -102,19 +105,24 @@ function validateUrl(url: string): string {
   try {
     const urlObj = new URL(url);
     
-    // Remove trailing slash from pathname if it's just "/"
-    if (urlObj.pathname === '/') {
+    // Clean up the pathname - remove trailing slash and normalize
+    if (urlObj.pathname === '/' || urlObj.pathname === '') {
       urlObj.pathname = '';
+    } else {
+      // Remove trailing slashes from pathname
+      urlObj.pathname = urlObj.pathname.replace(/\/+$/, '');
     }
     
-    // Return the normalized URL
-    return urlObj.toString();
+    // Ensure we have a clean hostname (remove any extra slashes)
+    urlObj.hostname = urlObj.hostname.toLowerCase();
+    
+    // Return the normalized URL without trailing slash
+    const normalizedUrl = urlObj.toString();
+    return normalizedUrl.endsWith('/') ? normalizedUrl.slice(0, -1) : normalizedUrl;
   } catch {
-    // If URL parsing fails, return the original with https prefix
-    if (!url.startsWith('https://')) {
-      url = 'https://' + url.replace(/^https?:\/\//, '');
-    }
-    return url;
+    // If URL parsing fails, try to construct a basic URL
+    const cleanUrl = url.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+    return `https://${cleanUrl}`;
   }
 }
 
@@ -510,6 +518,8 @@ export default function Home() {
   const { data, isLoading, error, refetch } = useQuery<ScoreData>({
     queryKey: [`/api/check?url=${encodeURIComponent(checkedUrl)}`],
     enabled: !!checkedUrl,
+    staleTime: 0, // Always refetch
+    cacheTime: 0, // Don't cache results
   });
 
   // Progress bar and message rotation effect
@@ -575,7 +585,23 @@ export default function Home() {
   };
 
   const handleTryAgain = () => {
+    // Force a fresh request by clearing any potential cache and refetching
     refetch();
+  };
+
+  const handleRerunTest = () => {
+    // Ensure we have the current URL and trigger a fresh test
+    if (checkedUrl) {
+      // Normalize the URL again to ensure consistency
+      const normalizedUrl = validateUrl(checkedUrl);
+      if (normalizedUrl !== checkedUrl) {
+        setCheckedUrl(normalizedUrl);
+        setUrlInput(normalizedUrl);
+      } else {
+        // If URL is already normalized, force refetch
+        refetch();
+      }
+    }
   };
 
   const handleContactUs = () => {
@@ -729,7 +755,7 @@ export default function Home() {
                 description="Fast loading boosts engagement"
                 url={data.url}
                 category="performance"
-                onRetest={refetch}
+                onRetest={handleRerunTest}
                 onContactUs={handleContactUs}
               />
               <ScoreCard
@@ -739,7 +765,7 @@ export default function Home() {
                 description="Great for search visibility"
                 url={data.url}
                 category="seo"
-                onRetest={refetch}
+                onRetest={handleRerunTest}
                 onContactUs={handleContactUs}
               />
               <ScoreCard
@@ -749,7 +775,7 @@ export default function Home() {
                 description="Helps everyone use your site"
                 url={data.url}
                 category="accessibility"
-                onRetest={refetch}
+                onRetest={handleRerunTest}
                 onContactUs={handleContactUs}
               />
               <ScoreCard
@@ -759,7 +785,7 @@ export default function Home() {
                 description="Secure and reliable"
                 url={data.url}
                 category="bestPractices"
-                onRetest={refetch}
+                onRetest={handleRerunTest}
                 onContactUs={handleContactUs}
               />
             </div>
