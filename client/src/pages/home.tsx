@@ -197,7 +197,7 @@ function TechnicalDetailsDialog({
           aria-expanded={isOpen}
         >
           <Info className="w-3 h-3 mr-1" />
-          More technical info
+          Click here to see detailed info
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto" aria-describedby="dialog-description">
@@ -407,7 +407,7 @@ function ScoreCard({
                 </span>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-2 justify-center">
+              <div className="flex flex-col gap-2 justify-center">
                 <Button 
                   variant="outline" 
                   size="sm" 
@@ -421,11 +421,11 @@ function ScoreCard({
                 <Button 
                   size="sm" 
                   onClick={onContactUs}
-                  className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-4"
+                  className="bg-orange-600 hover:bg-orange-700 text-white text-xs px-4 font-bold border-2 border-orange-700 shadow-lg"
                   data-testid={`button-contact-us-${title.toLowerCase()}`}
                 >
                   <Phone className="w-3 h-3 mr-1" />
-                  Get help improving
+                  Fix My Website Today!
                 </Button>
               </div>
             </div>
@@ -688,24 +688,6 @@ export default function Home() {
               />
             </div>
 
-            {/* Benefits Section */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6">
-              <h4 className="font-semibold text-gray-900 mb-3">Why These Metrics Matter</h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                <div className="flex items-start space-x-2">
-                  <span className="text-green-500 mt-0.5">🟢</span>
-                  <span className="text-gray-700">Better scores help attract visitors</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <span className="text-green-500 mt-0.5">🟢</span>
-                  <span className="text-gray-700">A smooth experience boosts engagement</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <span className="text-green-500 mt-0.5">🟢</span>
-                  <span className="text-gray-700">Strong first impressions drive conversions</span>
-                </div>
-              </div>
-            </div>
 
             {/* Disclaimer */}
             <div className="bg-gray-50 rounded-xl p-6">
